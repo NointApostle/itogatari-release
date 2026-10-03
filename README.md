@@ -14,7 +14,7 @@ The latest version is on the [releases page](https://github.com/NointApostle/ito
 - **Windows**: the `-setup.exe` installs it. The `-portable.exe` runs without installing. Windows may warn about both, because they are not signed by a store.
 - **Linux**: the `.AppImage`. Mark it as executable, then open it.
 
-Once it is installed, the app tells you when a new version is out. The Windows installer and the AppImage update themselves; on Android, and with the portable copy, it links you here.
+Once it is installed, the app tells you when a new version is out. On Android it downloads the new `.apk` and opens the installer. The Windows installer and the AppImage update themselves. The portable copy links you here.
 
 ## What it is
 
