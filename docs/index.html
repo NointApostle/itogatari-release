@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Itogatari: a story bible beside the manuscript</title>
+<meta name="description" content="Itogatari keeps your characters, places and world beside the chapters you are writing. Offline, with no account. For Android, Windows and Linux.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="Itogatari">
+<meta property="og:description" content="A story bible beside the manuscript. Offline, with no account.">
+<meta property="og:image" content="https://nointapostle.github.io/itogatari-release/assets/icon.png">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<!--
+  The app's own palette and type (PLAN.md §32 in the source repository): paper and ink, the
+  red thread from the icon, Newsreader for anything you read and Spline Sans for anything you
+  press. No icons in front of the features and no cards around them: they are a list, ruled,
+  the way the app draws its own lists.
+-->
+<style>
+  :root {
+    --paper: #f6f1e7;
+    --raised: #eee7da;
+    --ink: #1e1a16;
+    --soft: #665d53;
+    --muted: #857b70;
+    --rule: #ddd3c3;
+    --thread: #a3362b;
+    --on-thread: #ffffff;
+    --serif: 'Newsreader', Georgia, serif;
+    --sans: 'Spline Sans', system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #15130f;
+      --raised: #1f1c18;
+      --ink: #ede6da;
+      --soft: #a9a094;
+      --muted: #8a8176;
+      --rule: #322d26;
+      --thread: #e07a6c;
+      --on-thread: #1b1917;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 17px/1.6 var(--sans);
+  }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; height: auto; }
+
+  .page { max-width: 1720px; margin: 0 auto; padding: 0 clamp(20px, 3.5vw, 64px); }
+  /* On a wide monitor the screens and the type grow with the page, rather than leaving it a
+     column in the middle of a lot of paper. */
+  :root { --screen: 320px; }
+  @media (min-width: 1400px) { :root { --screen: 340px; } body { font-size: 18px; } }
+  @media (min-width: 1800px) { :root { --screen: 360px; } body { font-size: 19px; } }
+
+  /* The bar: the name, and two places to go. */
+  .bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .bar img { width: 36px; height: 36px; border-radius: 50%; }
+  .bar .name { font: 500 20px/1 var(--serif); text-decoration: none; }
+  .bar nav { margin-left: auto; display: flex; gap: 20px; font-size: 15px; }
+  .bar nav a { text-decoration: none; color: var(--soft); }
+  .bar nav a:hover { color: var(--ink); }
+
+  /* The opening: what it is, and the button. */
+  .opening {
+    display: grid; grid-template-columns: 1fr; gap: 40px;
+    padding: 56px 0 64px;
+    align-items: center;
+  }
+  @media (min-width: 860px) {
+    .opening { grid-template-columns: 1fr var(--screen); gap: clamp(64px, 8vw, 180px); padding: 80px 0 88px; }
+  }
+  h1 {
+    font: 500 clamp(36px, 4.4vw, 80px)/1.05 var(--serif);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  /* The thread under the headline, with its knot: the app's mark for "this far". */
+  .thread {
+    position: relative; height: 12px; margin: 22px 0 22px; max-width: 360px;
+  }
+  .thread::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 5px; height: 1.5px;
+    background: var(--thread);
+  }
+  .thread::after {
+    content: ''; position: absolute; right: -4px; top: 1.5px; width: 9px; height: 9px;
+    border-radius: 50%; background: var(--thread);
+  }
+  .lede { font: 400 clamp(20px, 1.5vw, 26px)/1.55 var(--serif); color: var(--soft); margin: 0; max-width: 34em; }
+  .name-note { font-size: 14px; color: var(--muted); margin: 14px 0 0; }
+
+  .get { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 30px; }
+  .button {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 22px; border-radius: 14px;
+    background: var(--ink); color: var(--paper);
+    font: 600 16px/1 var(--sans); text-decoration: none;
+  }
+  .button:hover { opacity: 0.88; }
+  .button svg { width: 18px; height: 18px; }
+  .get .other { font-size: 15px; color: var(--soft); }
+  .get .version { width: 100%; font-size: 14px; color: var(--muted); margin: 0; }
+
+  /* A screen of the app, as it is: no device drawn around it. */
+  .screen {
+    border-radius: 22px; overflow: hidden;
+    border: 1px solid var(--rule);
+    background: var(--raised);
+    width: 100%; max-width: var(--screen); justify-self: center;
+  }
+  .screen img { width: 100%; }
+
+  /* The four parts of the app, each with a screen beside it. */
+  .part {
+    display: grid; grid-template-columns: 1fr; gap: 32px;
+    padding: 56px 0; border-top: 1px solid var(--rule);
+    align-items: start;
+  }
+  @media (min-width: 860px) {
+    .part { grid-template-columns: 1fr var(--screen); gap: clamp(64px, 8vw, 140px); padding: 88px 0; }
+    .part.flip { grid-template-columns: var(--screen) 1fr; }
+    .part.flip .screen { order: -1; }
+  }
+  .part .kicker { font-size: 14px; color: var(--thread); margin: 0 0 6px; }
+  h2 { font: 500 clamp(28px, 3vw, 54px)/1.12 var(--serif); margin: 0 0 14px; }
+  .part > div > p { color: var(--soft); margin: 0 0 18px; max-width: 40em; font-size: 1.06em; }
+
+  /* Features as a ruled list, the way the app lists things. */
+  ul.ruled { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule); }
+  ul.ruled li { padding: 14px 0; border-bottom: 1px solid var(--rule); }
+  ul.ruled b { font-weight: 600; }
+
+  /* The parts with no screen: lists across the whole width, two to a row on a wide window. */
+  .part.lists { display: block; }
+  .pair { display: grid; grid-template-columns: 1fr; gap: 0 clamp(56px, 6vw, 120px); }
+  @media (min-width: 720px) { .pair { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1400px) { .pair { grid-template-columns: repeat(4, 1fr); } }
+  .pair h3 { font: 500 24px/1.2 var(--serif); margin: 0 0 12px; }
+  .pair > div { padding: 0 0 36px; }
+
+  /* Downloads: three rows, one per kind of computer. */
+  .downloads { padding: 64px 0 72px; border-top: 1px solid var(--rule); }
+  .downloads > p { color: var(--soft); margin: 0 0 24px; }
+  .platform {
+    display: grid; grid-template-columns: 1fr; gap: 8px 24px;
+    padding: 20px 0; border-bottom: 1px solid var(--rule);
+  }
+  .platform:first-of-type { border-top: 1px solid var(--rule); }
+  @media (min-width: 640px) {
+    .platform { grid-template-columns: 200px 1fr auto; align-items: center; }
+  }
+  .platform h3 { font: 500 22px/1.2 var(--serif); margin: 0; }
+  .platform p { margin: 0; color: var(--soft); font-size: 15px; }
+  .platform .links { display: flex; gap: 10px; flex-wrap: wrap; }
+  .platform .links a {
+    padding: 9px 16px; border-radius: 999px; text-decoration: none; font-size: 15px;
+    border: 1.5px solid var(--thread); color: var(--thread); font-weight: 500;
+  }
+  .platform .links a.main { background: var(--thread); color: var(--on-thread); }
+  .downloads .after { margin: 22px 0 0; font-size: 15px; color: var(--soft); }
+
+  footer {
+    padding: 28px 0 40px; border-top: 1px solid var(--rule);
+    font-size: 14px; color: var(--muted);
+    display: flex; flex-wrap: wrap; gap: 8px 24px;
+  }
+  footer a { color: var(--soft); }
+
+  :focus-visible { outline: 2px solid var(--thread); outline-offset: 3px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="bar">
+    <img src="assets/mark.png" alt="" width="36" height="36">
+    <a class="name" href="./">Itogatari</a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#download">Download</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="opening">
+      <div>
+        <h1>Write the book, and keep its bible in the same place.</h1>
+        <div class="thread" aria-hidden="true"></div>
+        <p class="lede">Itogatari keeps your characters, places and world beside the chapters you are writing. Name someone in a scene and their page knows every scene they are in. It works offline, on your phone and your PC, with no account.</p>
+        <p class="name-note">糸語り, itogatari: “thread-telling”.</p>
+
+        <div class="get">
+          <a class="button" id="get" href="https://github.com/NointApostle/itogatari-release/releases/latest">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/></svg>
+            <span id="get-label">Download</span>
+          </a>
+          <a class="other" href="#download">Android, Windows and Linux</a>
+          <p class="version" id="version"></p>
+        </div>
+      </div>
+
+      <picture class="screen">
+        <source srcset="assets/story-dark.webp" media="(prefers-color-scheme: dark)">
+        <img src="assets/story-light.webp" width="390" height="844"
+             alt="The Story tab for The Lot at Coldbeck: the note left at the last scene, a Keep writing button, the word count and today's goal.">
+      </picture>
+    </section>
+
+    <section class="part" id="features">
+      <div>
+        <p class="kicker">Codex</p>
+        <h2>Who is in it</h2>
+        <p>Every person, place and piece of the world, each on a page of its own that you can fill in as you go.</p>
+        <ul class="ruled">
+          <li><b>Characters</b> with a role, pronouns, an age worked out from your story's calendar, what they want and what they need, where their arc starts and ends, their quotes, traits and relationships, and a family tree.</li>
+          <li><b>Places</b> that sit inside other places, with a map you can pin them on.</li>
+          <li><b>Worldbuilding</b> for factions, magic systems, species, religions and customs, and kinds of record you make up yourself.</li>
+          <li><b>Where they appear.</b> Every record lists the scenes it is in, and shows how long the book goes without it.</li>
+        </ul>
+      </div>
+      <picture class="screen">
+        <source srcset="assets/character-dark.webp" media="(prefers-color-scheme: dark)">
+        <img src="assets/character-light.webp" width="390" height="844" loading="lazy"
+             alt="Hester Pike's page: her name, role and age, a quote, what she wants and what she needs, and where her arc starts and ends.">
+      </picture>
+    </section>
+
+    <section class="part flip">
+      <div>
+        <p class="kicker">Write</p>
+        <h2>Writing it</h2>
+        <p>Chapters and scenes, saved as you type. The bible is never more than a tap away from the sentence you are on.</p>
+        <ul class="ruled">
+          <li><b>Mentions.</b> Type @ and a name. In the finished text the name is a link, coloured by whether it is a person or a place, and tapping it shows their page without leaving the scene.</li>
+          <li><b>Focus mode</b>, find and replace, comments, and every earlier version of a scene to go back to.</li>
+          <li><b>Split and merge</b> scenes, and keep cut passages in Cuttings to put back later.</li>
+          <li><b>Where you left off.</b> Leave yourself a line when you stop, and the app opens on it next time.</li>
+          <li><b>Read it through</b> as a book, or have it read aloud.</li>
+        </ul>
+      </div>
+      <picture class="screen">
+        <source srcset="assets/read-dark.webp" media="(prefers-color-scheme: dark)">
+        <img src="assets/read-light.webp" width="390" height="844" loading="lazy"
+             alt="The opening scene being read, with the Gin Pit and Tobe mentioned in it.">
+      </picture>
+    </section>
+
+    <section class="part">
+      <div>
+        <p class="kicker">Plot</p>
+        <h2>The shape of it</h2>
+        <p>The same scenes, laid out so you can see the book at once.</p>
+        <ul class="ruled">
+          <li><b>A corkboard</b> of scenes by chapter. Drag a card, or tap it and then tap where it goes.</li>
+          <li><b>A timeline</b> of beats in story order, and a chronicle of who is where, by date in your story's own calendar.</li>
+          <li><b>Arcs, threads, and setups</b> with the payoffs they point to.</li>
+          <li><b>A pacing chart</b>, a continuity check, and a list of loose ends.</li>
+        </ul>
+      </div>
+      <picture class="screen">
+        <source srcset="assets/board-dark.webp" media="(prefers-color-scheme: dark)">
+        <img src="assets/board-light.webp" width="390" height="844" loading="lazy"
+             alt="The corkboard: scene cards under their chapter, each with a short summary.">
+      </picture>
+    </section>
+
+    <section class="part lists">
+      <div class="pair">
+        <div>
+          <p class="kicker">Story</p>
+          <h3>Every day</h3>
+          <ul class="ruled">
+            <li>A word goal for the day and a target for the book.</li>
+            <li>A streak, and a finish date worked out from your pace.</li>
+            <li>Writing sprints with a timer.</li>
+            <li>Badges for what the work adds up to over time.</li>
+          </ul>
+        </div>
+        <div>
+          <p class="kicker">Export</p>
+          <h3>Sending it out</h3>
+          <ul class="ruled">
+            <li>The manuscript as PDF, EPUB, Word or Markdown.</li>
+            <li>A standard submission manuscript, with a query letter and a synopsis.</li>
+            <li>A glossary of every name in the book.</li>
+            <li>A revision outline, scene by scene.</li>
+          </ul>
+        </div>
+        <div>
+          <p class="kicker">Your files</p>
+          <h3>Keeping it</h3>
+          <ul class="ruled">
+            <li>Everything stays on your device. There is no account, and nothing is sent anywhere unless you set it up.</li>
+            <li>Automatic backups to a folder, a WebDAV server or your own database, sealed with a passphrase if you want.</li>
+            <li>Sync your phone with your PC over Wi-Fi by scanning a code, and see every change before it is made.</li>
+            <li>A fingerprint lock on Android.</li>
+          </ul>
+        </div>
+        <div>
+          <p class="kicker">Settings</p>
+          <h3>Language and look</h3>
+          <ul class="ruled">
+            <li>In English, Japanese (日本語) and Filipino.</li>
+            <li>A typeface made for easy reading, in Settings.</li>
+            <li>Light and dark, following your phone or set by hand.</li>
+            <li>Four app icons to choose from.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="downloads" id="download">
+      <h2>Download</h2>
+      <p id="download-version">The latest version, from GitHub.</p>
+
+      <div class="platform" id="android">
+        <h3>Android</h3>
+        <p>For Android 7 and later. Your phone asks once to allow installs from your browser.</p>
+        <div class="links">
+          <a class="main" data-asset="apk" href="https://github.com/NointApostle/itogatari-release/releases/latest">Download APK</a>
+        </div>
+      </div>
+
+      <div class="platform" id="windows">
+        <h3>Windows</h3>
+        <p>An installer, or a portable copy that runs without installing.</p>
+        <div class="links">
+          <a class="main" data-asset="setup" href="https://github.com/NointApostle/itogatari-release/releases/latest">Installer</a>
+          <a data-asset="portable" href="https://github.com/NointApostle/itogatari-release/releases/latest">Portable</a>
+        </div>
+      </div>
+
+      <div class="platform" id="linux">
+        <h3>Linux</h3>
+        <p>An AppImage. Mark it as executable, then open it.</p>
+        <div class="links">
+          <a class="main" data-asset="appimage" href="https://github.com/NointApostle/itogatari-release/releases/latest">Download AppImage</a>
+        </div>
+      </div>
+
+      <p class="after">Once it is installed, the app tells you when a new version is out. Every version is on the <a href="https://github.com/NointApostle/itogatari-release/releases">releases page</a>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <span>Itogatari is made by NointApostle.</span>
+    <a href="https://github.com/NointApostle/itogatari-release/releases">Releases on GitHub</a>
+  </footer>
+</div>
+
+<script>
+  // Point every download at the file itself rather than the releases page, once GitHub says
+  // which files the latest release has. Without this (or with no network to GitHub's API) the
+  // links still work: they all go to the latest release.
+  (function () {
+    var KINDS = {
+      apk: function (name) { return /\.apk$/i.test(name); },
+      setup: function (name) { return /setup.*\.exe$/i.test(name); },
+      portable: function (name) { return /portable.*\.exe$/i.test(name); },
+      appimage: function (name) { return /\.AppImage$/i.test(name); },
+    };
+
+    // The big button offers the file for the computer the page is open on.
+    var ua = navigator.userAgent;
+    var here = /Android/i.test(ua) ? 'apk'
+      : /Windows/i.test(ua) ? 'setup'
+      : /Linux|X11/i.test(ua) ? 'appimage'
+      : null;
+    var labels = { apk: 'Download for Android', setup: 'Download for Windows', appimage: 'Download for Linux' };
+    var get = document.getElementById('get');
+    if (here) {
+      document.getElementById('get-label').textContent = labels[here];
+    } else {
+      // An iPhone or a Mac: there is no build for either, so the button goes to the list.
+      document.getElementById('get-label').textContent = 'See downloads';
+      get.href = '#download';
+    }
+
+    fetch('https://api.github.com/repos/NointApostle/itogatari-release/releases/latest')
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (release) {
+        if (!release || !release.assets) return;
+        var version = (release.tag_name || '').replace(/^v/, '').replace(/\+.*$/, '');
+        var date = release.published_at
+          ? new Date(release.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+          : '';
+        var line = 'Version ' + version + (date ? ', released ' + date : '') + '.';
+        document.getElementById('version').textContent = line;
+        document.getElementById('download-version').textContent = line;
+
+        var find = function (kind) {
+          return release.assets.filter(function (asset) { return KINDS[kind](asset.name); })[0];
+        };
+        document.querySelectorAll('[data-asset]').forEach(function (link) {
+          var asset = find(link.getAttribute('data-asset'));
+          if (asset) link.href = asset.browser_download_url;
+        });
+        if (here && find(here)) get.href = find(here).browser_download_url;
+      })
+      .catch(function () {});
+  })();
+</script>
+</body>
+</html>
