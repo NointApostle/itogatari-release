@@ -4,7 +4,7 @@ A story bible beside the manuscript, for Android, Windows and Linux.
 
 This repository holds the releases and the website. The app's source code is kept elsewhere.
 
-Website: https://nointapostle.github.io/itogatari-release/
+Website: https://itogatari.nointdev.xyz/
 
 ## Download
 
