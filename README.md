@@ -6,6 +6,8 @@ This repository holds the releases and the website. The app's source code is kep
 
 Website: https://itogatari.nointdev.xyz/
 
+Support: [Buy me a coffee](https://buymeacoffee.com/noint)
+
 ## Download
 
 The latest version is on the [releases page](https://github.com/NointApostle/itogatari-release/releases/latest).
@@ -27,3 +29,7 @@ It is in English, Japanese and Filipino.
 ## Problems
 
 If something is wrong, open an issue here. Say what you did, what happened, and the version shown in Settings.
+
+## Support
+
+Itogatari is free, with no ads and no account, and it is made by one person. If it helps with your book, you can [buy me a coffee](https://buymeacoffee.com/noint).

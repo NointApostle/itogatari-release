@@ -74,9 +74,16 @@
   }
   .bar img { width: 36px; height: 36px; border-radius: 50%; }
   .bar .name { font: 500 20px/1 var(--serif); text-decoration: none; }
-  .bar nav { margin-left: auto; display: flex; gap: 20px; font-size: 15px; }
+  .bar nav { margin-left: auto; display: flex; align-items: center; gap: 20px; font-size: 15px; }
   .bar nav a { text-decoration: none; color: var(--soft); }
   .bar nav a:hover { color: var(--ink); }
+  .bar nav a.support {
+    padding: 6px 14px; border-radius: 999px;
+    border: 1.5px solid var(--thread); color: var(--thread); font-weight: 500;
+  }
+  .bar nav a.support:hover { background: var(--thread); color: var(--on-thread); }
+  /* On a narrow phone there is no room for three; the features are just below anyway. */
+  @media (max-width: 420px) { .bar nav { gap: 14px; } .bar nav a[href="#features"] { display: none; } }
 
   /* The opening: what it is, and the button. */
   .opening {
@@ -177,6 +184,16 @@
   .platform .links a.main { background: var(--thread); color: var(--on-thread); }
   .downloads .after { margin: 22px 0 0; font-size: 15px; color: var(--soft); }
 
+  /* Support: one line and one button, after the downloads. */
+  .support-me {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 40px;
+    padding: 56px 0 64px; border-top: 1px solid var(--rule);
+  }
+  .support-me > div { flex: 1 1 28em; }
+  .support-me h2 { margin-bottom: 10px; }
+  .support-me p { color: var(--soft); margin: 0; max-width: 40em; font-size: 1.06em; }
+  .button.coffee { background: var(--thread); color: var(--on-thread); }
+
   footer {
     padding: 28px 0 40px; border-top: 1px solid var(--rule);
     font-size: 14px; color: var(--muted);
@@ -196,6 +213,7 @@
     <nav>
       <a href="#features">Features</a>
       <a href="#download">Download</a>
+      <a class="support" href="#support">Support</a>
     </nav>
   </header>
 
@@ -357,6 +375,17 @@
       </div>
 
       <p class="after">Once it is installed, the app tells you when a new version is out. Every version is on the <a href="https://github.com/NointApostle/itogatari-release/releases">releases page</a>.</p>
+    </section>
+
+    <section class="support-me" id="support">
+      <div>
+        <h2>Support Itogatari</h2>
+        <p>Itogatari is free, with no ads and no account, and it is made by one person. If it helps with your book, you can buy me a coffee. It goes towards the time spent on new versions.</p>
+      </div>
+      <a class="button coffee" href="https://buymeacoffee.com/noint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2.5v2.5"/><path d="M12 2.5v2.5"/></svg>
+        <span>Buy me a coffee</span>
+      </a>
     </section>
   </main>
 
